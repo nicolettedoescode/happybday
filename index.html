@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Happy Birthday</title>
+  <style>
+    body {
+      background-color: #333;
+      color: #fff;
+      font-family: sans-serif;
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      font-size: 4em;
+      margin-bottom: 20px;
+    }
+
+    .cake {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: #333;
+      border: 5px solid #fff;
+      position: relative;
+      cursor: pointer;
+      overflow: visible; /* Ensure the candles are visible */
+      z-index: 1; /* Keep the cake in front of the image */
+    }
+
+    .cake img {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: auto;
+      z-index: 0; /* Keep the image behind the cake */
+    }
+
+    .candle {
+      width: 10px;
+      height: 50px;
+      background-color: #fff;
+      position: absolute;
+      transform-origin: bottom center;
+      z-index: 10; /* Ensure candles are on top of the cake and image */
+    }
+
+    .candle-flame {
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-bottom: 10px solid #ff9900;
+      position: absolute;
+      bottom: 100%; /* Position flame above the candle */
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @keyframes flicker {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(5deg);
+      }
+    }
+
+    .audio-player {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #fff;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    audio {
+      display: block;
+      margin-top: 20px;
+      background-color: #fff;
+      color: #333;
+      border: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Happy Birthday Thessica!</h1>
+
+    <div class="cake" onclick="addCandle(event)">
+      <img src="image/cake" alt="Cake">
+    </div>
+
+    <p>Number of candles on cake: <span id="candle-count">0</span></p>
+
+    <!-- Audio player to play the audio file -->
+    <audio controls>
+      <source src="audio/happybdayaudio.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <script>
+    let candleCount = 0;
+    const cake = document.querySelector('.cake');
+    const candleCountSpan = document.getElementById('candle-count');
+    const maxCandles = 22; // Maximum number of candles allowed
+
+    function addCandle(event) {
+      if (candleCount >= maxCandles) {
+        alert("Maximum number of candles reached!");
+        return;
+      }
+
+      candleCount++;
+      const cakeRect = cake.getBoundingClientRect();
+      const x = event.clientX - cakeRect.left;
+      const y = event.clientY - cakeRect.top;
+      const cakeRadius = cakeRect.width / 2;
+      const cakeCenterY = cakeRect.height / 2;
+
+      // Calculate the distance from the center of the cake
+      const distanceFromCenter = Math.sqrt(Math.pow(x - cakeRadius, 2) + Math.pow(y - cakeCenterY, 2));
+
+      // Only add the candle if the click is within the top half of the cake
+      if (y < cakeCenterY && distanceFromCenter <= cakeRadius) {
+        const candle = document.createElement('div');
+        candle.classList.add('candle');
+        candle.style.left = `${x - 5}px`; // Center the candle on the click position
+        candle.style.top = `${y - 50 - 10}px`; // Position candle above the clicked point
+
+        // Adjust candle position to be within the cake boundary
+        if (parseInt(candle.style.left) < 0) candle.style.left = '0px';
+        if (parseInt(candle.style.left) > cakeRect.width - 10) candle.style.left = `${cakeRect.width - 10}px`;
+
+        cake.appendChild(candle);
+
+        const flame = document.createElement('div');
+        flame.classList.add('candle-flame');
+        candle.appendChild(flame);
+
+        candleCountSpan.textContent = candleCount;
+      }
+    }
+  </script>
+</body>
+</html>
